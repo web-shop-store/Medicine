@@ -1,337 +1,271 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="bn">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>iOS Style Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Powerfull Capsule</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background-color: #000;
-      color: white;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding-top: 40px;
-    }
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+      font-family: 'Noto Sans Bengali', sans-serif;
+    }body {
+  background: linear-gradient(to bottom right, #e0f7fa, #b2ebf2);
+  color: #004d40;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  position: relative;
+}
 
-    .calculator {
-      width: 100%;
-      max-width: 360px;
-      padding: 0 16px;
-    }
+.slider {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  height: 280px;
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  margin-bottom: 25px;
+}
 
-    .display {
-      text-align: right;
-      font-size: 4rem;
-      min-height: 100px;
-      padding: 20px;
-      overflow-x: auto;
-      white-space: nowrap;
-      color: white;
-    }
+.slide {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+  border-radius: 16px;
+}
 
-    .buttons {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-top: 10px;
-    }
+.slide.active {
+  opacity: 1;
+}
 
-    .buttons button {
-      aspect-ratio: 1 / 1;
-      font-size: 2rem;
-      border: none;
-      border-radius: 50%;
-      font-weight: 500;
-      transition: transform 0.1s ease-in-out;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+.card {
+  max-width: 520px;
+  background: #e0f2f1;
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  margin-bottom: 25px;
+  animation: fadeIn 1s ease-in;
+}
 
-    .buttons button:active {
-      transform: scale(0.95);
-    }
+.card h2 {
+  color: #00796b;
+  margin-bottom: 12px;
+}
 
-    .btn-grey {
-      background-color: #a5a5a5;
-      color: black;
-    }
+.price {
+  font-size: 22px;
+  color: #00695c;
+  font-weight: bold;
+  margin: 10px 0;
+}
 
-    .btn-orange {
-      background-color: #ff9500;
-      color: white;
-    }
+.highlight {
+  background-color: #b2dfdb;
+  color: #004d40;
+  padding: 10px 15px;
+  border-left: 5px solid #00796b;
+  border-radius: 6px;
+  margin: 12px 0;
+  font-size: 16px;
+}
 
-    .btn-dark {
-      background-color: #333333;
-      color: white;
-    }
+.order-btn {
+  padding: 14px 30px;
+  background: linear-gradient(to right, #00796b, #4db6ac);
+  color: white;
+  border-radius: 50px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+  transition: transform 0.3s ease;
+  animation: floatBtn 2.5s infinite;
+}
 
-    #qr {
-      display: none;
-      text-align: center;
-      margin-top: 60px;
-    }
+.order-btn:hover {
+  transform: scale(1.05);
+}
 
-    #qr img {
-      background: white;
-      padding: 2px;
-      border-radius: 12px;
-      width: 80%;
-      max-width: 300px;
-    }
+.whatsapp-share {
+  display: inline-block;
+  margin-top: 20px;
+  margin-bottom: 30px;
+  background-color: #25D366;
+  color: white;
+  padding: 12px 25px;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
 
-    #qr p {
-      color: white;
-      margin-top: 10px;
-      font-size: 1.2rem;
-    }
+.whatsapp-share:hover {
+  background-color: #1ebe5d;
+  transform: scale(1.05);
+}
 
-    #shareReceiptBtn {
-      background-color: #0a84ff;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 6px 12px;
-      font-size: 0.9rem;
-      cursor: pointer;
-      margin-top: 10px;
-    }
+.reviews p {
+  margin: 10px 0;
+  font-size: 15px;
+  color: #004d40;
+}
 
-    #shareReceiptBtn:hover {
-      background-color: #0060df;
-    }
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  background: #e0f2f1;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+  text-align: center;
+  z-index: 999;
+  display: none;
+  animation: popupIn 0.5s ease forwards;
+  max-width: 90%;
+}
 
-    #history {
-      margin-top: 40px;
-      max-width: 360px;
-      width: 100%;
-      padding: 0 16px;
-    }
+.popup h3 {
+  font-size: 20px;
+  color: #00796b;
+  margin-bottom: 10px;
+}
 
-    #history h3 {
-      font-size: 1.2rem;
-      margin-bottom: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+.popup p {
+  font-size: 16px;
+  color: #004d40;
+}
 
-    #historyList {
-      list-style: none;
-      padding: 0;
-      max-height: 200px;
-      overflow-y: auto;
-      color: #ccc;
-      font-size: 1rem;
-      border-top: 1px solid #333;
-    }
+.popup button {
+  margin-top: 20px;
+  padding: 8px 20px;
+  background: #00796b;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
 
-    #historyList li {
-      padding: 6px 0;
-      border-bottom: 1px solid #222;
-    }
+.fake-order-notice {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  background: #ffffff;
+  color: #00796b;
+  padding: 12px 18px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  font-size: 14px;
+  animation: slideIn 0.5s ease;
+  z-index: 999;
+  display: none;
+}
 
-    #clearHistoryBtn, #downloadHistoryBtn {
-      background-color: #333;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 6px 12px;
-      font-size: 0.9rem;
-      cursor: pointer;
-    }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
-    #clearHistoryBtn:hover { background-color: #ff3b30; }
-    #downloadHistoryBtn:hover { background-color: #007aff; }
+@keyframes floatBtn {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes popupIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%) scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
   </style>
 </head>
 <body>
-  <div class="calculator">
-    <div class="display" id="display">0</div>
-    <div class="buttons">
-      <button class="btn-grey" onclick="clearDisplay()">AC</button>
-      <button class="btn-grey" onclick="backspace()">⌫</button>
-      <button class="btn-grey" onclick="append('%')">%</button>
-      <button class="btn-orange" onclick="append('/')">÷</button>
+  <div class="slider" id="slider">
+    <img src="image1.jpg" alt="পণ্য ১" class="slide active">
+    <img src="image2.jpg" alt="পণ্য ২" class="slide">
+    <img src="image3.jpg" alt="পণ্য ৩" class="slide">
+  </div>  <div class="card">
+    <h2>অসাধারণ মানের প্রোডাক্ট!</h2>
+    <p>সেরা দামে, উন্নত মানের এবং সীমিত সময়ের অফার!</p>
+    <div class="price">মাত্র ৯৯৯ টাকা</div>
+    <div class="highlight">🔥 আজকের অফার: ফ্রি হোম ডেলিভারি</div>
+    <div class="highlight">💸 ক্যাশ অন ডেলিভারি সুবিধা</div>
+    <div class="highlight">🛍️ মোট অর্ডার: ১৩৫০+</div>
+    <div class="highlight">⭐ ইউজার রেটিং: ৪.৭/৫</div>
+  </div>  <a class="order-btn" href="https://docs.google.com/forms/d/e/1FAIpQLSd2TvJFg9-TUbNPtyvaL0eeisW77LfFXL5RW0TNCZBNbAVjyw/viewform?usp=dialog" target="_blank">
+    এখনই অর্ডার করুন
+  </a>  <a class="whatsapp-share" href="https://api.whatsapp.com/send?text=দেখো!%20দারুন%20একটা%20পণ্য%20অফারে%20পেয়েছি!%20মাত্র%20₹৯৯৯%20টাকায়%20অর্ডার%20করতে%20এখানে%20যাও:%20https://docs.google.com/forms/d/e/1FAIpQLSd2TvJFg9-TUbNPtyvaL0eeisW77LfFXL5RW0TNCZBNbAVjyw/viewform?usp=dialog" target="_blank">
+    📲 WhatsApp-এ শেয়ার করুন
+  </a>  <div class="card reviews">
+    <h2>টপ কাস্টমার রিভিউ</h2>
+    <p><strong>রাহুল খান:</strong> “খুব ভালো প্রোডাক্ট, প্রথম দিনই কাজ শুরু।”</p>
+    <p><strong>শর্ণেন্দু সরকার:</strong> “দাম অনুযায়ী অনেক ভালো কোয়ালিটি।”</p>
+    <p><strong>অনুপম হালদার:</strong> “একবার শক্ত হলে নরম হতেই চায়না ,বউ বিরক্ত হয়ে যায়।”</p>
+    <p><strong>মোস্তাকিম মোল্লা:</strong> “সত্যিই প্রোডাক্ট টিকে অসংখ্য ধন্যবাদ, আমাদের বিবাহ জীবন আরো আনন্দময় হয়ে উঠেছে!”</p>
+  </div>  <div class="popup" id="offerPopup">
+    <h3>🎁 আজকের এক্সক্লুসিভ অফার!</h3>
+    <p>মাত্র আজকের জন্য — <strong>ফ্রি ডেলিভারি</strong> ও <strong>অনলাইন পেমেন্ট এ 20% ছাড়!</strong></p>
+    <button onclick="document.getElementById('offerPopup').style.display='none'">✖ বন্ধ করুন</button>
+  </div>  <div class="fake-order-notice" id="fakeOrder"></div>  <script>
+    const slides = document.querySelectorAll('.slide');
+    let current = 0;
 
-      <button class="btn-dark" onclick="append('7')">7</button>
-      <button class="btn-dark" onclick="append('8')">8</button>
-      <button class="btn-dark" onclick="append('9')">9</button>
-      <button class="btn-orange" onclick="append('*')">×</button>
-
-      <button class="btn-dark" onclick="append('4')">4</button>
-      <button class="btn-dark" onclick="append('5')">5</button>
-      <button class="btn-dark" onclick="append('6')">6</button>
-      <button class="btn-orange" onclick="append('-')">−</button>
-
-      <button class="btn-dark" onclick="append('1')">1</button>
-      <button class="btn-dark" onclick="append('2')">2</button>
-      <button class="btn-dark" onclick="append('3')">3</button>
-      <button class="btn-orange" onclick="append('+')">+</button>
-
-      <button class="btn-dark" onclick="append('0')">0</button>
-      <button class="btn-dark" onclick="append('00')">00</button>
-      <button class="btn-dark" onclick="append('.')">.</button>
-      <button class="btn-orange" onclick="calculate()">=</button>
-    </div>
-
-    <div id="qr"></div>
-    <button id="shareReceiptBtn" onclick="shareReceipt()">Share Receipt</button>
-  </div>
-
-  <div id="history">
-    <h3>History
-      <div>
-        <button id="clearHistoryBtn" onclick="clearHistory()">Clear</button>
-        <button id="downloadHistoryBtn" onclick="downloadHistory()">Download</button>
-      </div>
-    </h3>
-    <ul id="historyList"></ul>
-  </div>
-
-  <audio id="clickSound" preload="auto">
-    <source src="https://cdn.jsdelivr.net/gh/napthedev/audio-host/sounds/button-16.mp3" type="audio/mpeg" />
-  </audio>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-
-  <script>
-    const display = document.getElementById('display');
-    const historyList = document.getElementById('historyList');
-
-    window.onload = () => {
-      const saved = JSON.parse(localStorage.getItem("calcHistory") || "[]");
-      saved.forEach(entry => addToHistory(entry, false));
-    };
-
-    function playClick() {
-      const click = document.getElementById('clickSound');
-      if (click && click.readyState >= 2) {
-        click.pause();
-        click.currentTime = 0;
-        click.play().catch(() => {});
-      }
+    function showSlide(index) {
+      slides.forEach((slide, i) => {
+        slide.classList.remove('active');
+        if (i === index) slide.classList.add('active');
+      });
     }
 
-    function append(val) {
-      playClick();
-      if (display.innerText === '0' || display.innerText === 'Error') {
-        display.innerText = '';
-      }
-      display.innerText += val;
-    }
+    setInterval(() => {
+      current = (current + 1) % slides.length;
+      showSlide(current);
+    }, 3000);
 
-    function clearDisplay() {
-      playClick();
-      display.innerText = '0';
-      document.getElementById('qr').style.display = 'none';
-      document.getElementById('qr').innerHTML = '';
-    }
+    // Offer popup
+    setTimeout(() => {
+      document.getElementById('offerPopup').style.display = 'block';
+    }, 3000);
 
-    function backspace() {
-      playClick();
-      let val = display.innerText;
-      if (val.length > 1) {
-        display.innerText = val.slice(0, -1);
-      } else {
-        display.innerText = '0';
-      }
-    }
+    // Fake order notifications
+    const fakeOrders = [
+      "🛒 সোনারপুর  থেকে অর্ডার হয়েছে মাত্র এখনই!",
+      "🛒 শিলিগুড়ি থেকে নতুন অর্ডার এসেছে!",
+      "🛒 হাওড়া থেকে অর্ডার এসেছে ২ মিনিট আগে!",
+      "🛒 বারাসাত থেকে একজন এখনই অর্ডার করলেন!",
+      "🛒 আলিপুর থেকে পেমেন্ট অন ডেলিভারি অর্ডার!",
+    ];
 
-    function calculate() {
-      playClick();
-      try {
-        const rawExpression = display.innerText;
-        let expression = rawExpression.replace(/%/g, '/100');
-        const result = eval(expression);
-        display.innerText = result;
-
-        const upiId = "7003090983@ybl";
-        const upiUrl = `upi://pay?pa=${upiId}&pn=Mshikari&am=${result}&cu=INR`;
-
-        QRCode.toDataURL(upiUrl, { width: 300 }, function (err, url) {
-          if (err) return;
-          const qr = document.getElementById('qr');
-          qr.style.display = 'block';
-          qr.innerHTML = `<img src="${url}" alt="QR"><p>Scan to Pay ₹${result}</p>`;
-        });
-
-        addToHistory(`${rawExpression} = ${result}`, true);
-      } catch {
-        display.innerText = 'Error';
-      }
-    }
-
-    function addToHistory(entry, save = true) {
-      const timestamp = new Date().toISOString().replace("T", " ").slice(0, 16);
-      const fullEntry = `[${timestamp}] ${entry}`;
-      const li = document.createElement('li');
-      li.textContent = fullEntry;
-      historyList.prepend(li);
-
-      if (save) {
-        const current = JSON.parse(localStorage.getItem("calcHistory") || "[]");
-        current.unshift(fullEntry);
-        localStorage.setItem("calcHistory", JSON.stringify(current.slice(0, 100)));
-      }
-    }
-
-    function clearHistory() {
-      historyList.innerHTML = '';
-      localStorage.removeItem("calcHistory");
-    }
-
-    function downloadHistory() {
-      const data = JSON.parse(localStorage.getItem("calcHistory") || "[]");
-      if (data.length === 0) {
-        alert("No history to download.");
-        return;
-      }
-      const content = data.join("\n");
-      const blob = new Blob([content], { type: "text/plain" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "calculator-history.txt";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
-
-    async function shareReceipt() {
-      playClick();
-      const qrElement = document.getElementById("qr");
-      if (!qrElement || qrElement.style.display === "none") {
-        alert("No QR code to share!");
-        return;
-      }
-
-      const canvas = await html2canvas(qrElement);
-      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-      const file = new File([blob], "receipt.png", { type: "image/png" });
-
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        try {
-          await navigator.share({
-            title: "Payment Receipt",
-            text: "Scan to pay this amount",
-            files: [file]
-          });
-        } catch (error) {
-          alert("Sharing canceled or failed.");
-        }
-      } else {
-        const link = document.createElement('a');
-        link.download = "receipt.png";
-        link.href = URL.createObjectURL(blob);
-        link.click();
-      }
-    }
-  </script>
-</body>
+    let fakeIndex = 0;
+    setInterval(() => {
+      const box = document.getElementById('fakeOrder');
+      box.textContent = fakeOrders[fakeIndex];
+      box.style.display = 'block';
+      setTimeout(() => {
+        box.style.display = 'none';
+      }, 4000);
+      fakeIndex = (fakeIndex + 1) % fakeOrders.length;
+    }, 6000);
+  </script></body>
 </html>
