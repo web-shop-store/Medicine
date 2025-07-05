@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>iOS Style Calculator</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: #000;
+      color: white;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 40px;
+    }
+
+    .calculator {
+      width: 100%;
+      max-width: 360px;
+      padding: 0 16px;
+    }
+
+    .display {
+      text-align: right;
+      font-size: 4rem;
+      min-height: 100px;
+      padding: 20px;
+      overflow-x: auto;
+      white-space: nowrap;
+      color: white;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .buttons button {
+      aspect-ratio: 1 / 1;
+      font-size: 2rem;
+      border: none;
+      border-radius: 50%;
+      font-weight: 500;
+      transition: transform 0.1s ease-in-out;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .buttons button:active {
+      transform: scale(0.95);
+    }
+
+    .btn-grey {
+      background-color: #a5a5a5;
+      color: black;
+    }
+
+    .btn-orange {
+      background-color: #ff9500;
+      color: white;
+    }
+
+    .btn-dark {
+      background-color: #333333;
+      color: white;
+    }
+
+    #qr {
+      display: none;
+      text-align: center;
+      margin-top: 60px;
+    }
+
+    #qr img {
+      background: white;
+      padding: 2px;
+      border-radius: 12px;
+      width: 80%;
+      max-width: 300px;
+    }
+
+    #qr p {
+      color: white;
+      margin-top: 10px;
+      font-size: 1.2rem;
+    }
+
+    #shareReceiptBtn {
+      background-color: #0a84ff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    #shareReceiptBtn:hover {
+      background-color: #0060df;
+    }
+
+    #history {
+      margin-top: 40px;
+      max-width: 360px;
+      width: 100%;
+      padding: 0 16px;
+    }
+
+    #history h3 {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    #historyList {
+      list-style: none;
+      padding: 0;
+      max-height: 200px;
+      overflow-y: auto;
+      color: #ccc;
+      font-size: 1rem;
+      border-top: 1px solid #333;
+    }
+
+    #historyList li {
+      padding: 6px 0;
+      border-bottom: 1px solid #222;
+    }
+
+    #clearHistoryBtn, #downloadHistoryBtn {
+      background-color: #333;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    #clearHistoryBtn:hover { background-color: #ff3b30; }
+    #downloadHistoryBtn:hover { background-color: #007aff; }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <div class="display" id="display">0</div>
+    <div class="buttons">
+      <button class="btn-grey" onclick="clearDisplay()">AC</button>
+      <button class="btn-grey" onclick="backspace()">⌫</button>
+      <button class="btn-grey" onclick="append('%')">%</button>
+      <button class="btn-orange" onclick="append('/')">÷</button>
+
+      <button class="btn-dark" onclick="append('7')">7</button>
+      <button class="btn-dark" onclick="append('8')">8</button>
+      <button class="btn-dark" onclick="append('9')">9</button>
+      <button class="btn-orange" onclick="append('*')">×</button>
+
+      <button class="btn-dark" onclick="append('4')">4</button>
+      <button class="btn-dark" onclick="append('5')">5</button>
+      <button class="btn-dark" onclick="append('6')">6</button>
+      <button class="btn-orange" onclick="append('-')">−</button>
+
+      <button class="btn-dark" onclick="append('1')">1</button>
+      <button class="btn-dark" onclick="append('2')">2</button>
+      <button class="btn-dark" onclick="append('3')">3</button>
+      <button class="btn-orange" onclick="append('+')">+</button>
+
+      <button class="btn-dark" onclick="append('0')">0</button>
+      <button class="btn-dark" onclick="append('00')">00</button>
+      <button class="btn-dark" onclick="append('.')">.</button>
+      <button class="btn-orange" onclick="calculate()">=</button>
+    </div>
+
+    <div id="qr"></div>
+    <button id="shareReceiptBtn" onclick="shareReceipt()">Share Receipt</button>
+  </div>
+
+  <div id="history">
+    <h3>History
+      <div>
+        <button id="clearHistoryBtn" onclick="clearHistory()">Clear</button>
+        <button id="downloadHistoryBtn" onclick="downloadHistory()">Download</button>
+      </div>
+    </h3>
+    <ul id="historyList"></ul>
+  </div>
+
+  <audio id="clickSound" preload="auto">
+    <source src="https://cdn.jsdelivr.net/gh/napthedev/audio-host/sounds/button-16.mp3" type="audio/mpeg" />
+  </audio>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+  <script>
+    const display = document.getElementById('display');
+    const historyList = document.getElementById('historyList');
+
+    window.onload = () => {
+      const saved = JSON.parse(localStorage.getItem("calcHistory") || "[]");
+      saved.forEach(entry => addToHistory(entry, false));
+    };
+
+    function playClick() {
+      const click = document.getElementById('clickSound');
+      if (click && click.readyState >= 2) {
+        click.pause();
+        click.currentTime = 0;
+        click.play().catch(() => {});
+      }
+    }
+
+    function append(val) {
+      playClick();
+      if (display.innerText === '0' || display.innerText === 'Error') {
+        display.innerText = '';
+      }
+      display.innerText += val;
+    }
+
+    function clearDisplay() {
+      playClick();
+      display.innerText = '0';
+      document.getElementById('qr').style.display = 'none';
+      document.getElementById('qr').innerHTML = '';
+    }
+
+    function backspace() {
+      playClick();
+      let val = display.innerText;
+      if (val.length > 1) {
+        display.innerText = val.slice(0, -1);
+      } else {
+        display.innerText = '0';
+      }
+    }
+
+    function calculate() {
+      playClick();
+      try {
+        const rawExpression = display.innerText;
+        let expression = rawExpression.replace(/%/g, '/100');
+        const result = eval(expression);
+        display.innerText = result;
+
+        const upiId = "7003090983@ybl";
+        const upiUrl = `upi://pay?pa=${upiId}&pn=Mshikari&am=${result}&cu=INR`;
+
+        QRCode.toDataURL(upiUrl, { width: 300 }, function (err, url) {
+          if (err) return;
+          const qr = document.getElementById('qr');
+          qr.style.display = 'block';
+          qr.innerHTML = `<img src="${url}" alt="QR"><p>Scan to Pay ₹${result}</p>`;
+        });
+
+        addToHistory(`${rawExpression} = ${result}`, true);
+      } catch {
+        display.innerText = 'Error';
+      }
+    }
+
+    function addToHistory(entry, save = true) {
+      const timestamp = new Date().toISOString().replace("T", " ").slice(0, 16);
+      const fullEntry = `[${timestamp}] ${entry}`;
+      const li = document.createElement('li');
+      li.textContent = fullEntry;
+      historyList.prepend(li);
+
+      if (save) {
+        const current = JSON.parse(localStorage.getItem("calcHistory") || "[]");
+        current.unshift(fullEntry);
+        localStorage.setItem("calcHistory", JSON.stringify(current.slice(0, 100)));
+      }
+    }
+
+    function clearHistory() {
+      historyList.innerHTML = '';
+      localStorage.removeItem("calcHistory");
+    }
+
+    function downloadHistory() {
+      const data = JSON.parse(localStorage.getItem("calcHistory") || "[]");
+      if (data.length === 0) {
+        alert("No history to download.");
+        return;
+      }
+      const content = data.join("\n");
+      const blob = new Blob([content], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "calculator-history.txt";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    async function shareReceipt() {
+      playClick();
+      const qrElement = document.getElementById("qr");
+      if (!qrElement || qrElement.style.display === "none") {
+        alert("No QR code to share!");
+        return;
+      }
+
+      const canvas = await html2canvas(qrElement);
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+      const file = new File([blob], "receipt.png", { type: "image/png" });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            title: "Payment Receipt",
+            text: "Scan to pay this amount",
+            files: [file]
+          });
+        } catch (error) {
+          alert("Sharing canceled or failed.");
+        }
+      } else {
+        const link = document.createElement('a');
+        link.download = "receipt.png";
+        link.href = URL.createObjectURL(blob);
+        link.click();
+      }
+    }
+  </script>
+</body>
+</html>
